@@ -1,0 +1,21 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<h1 class="display-3 text-center text-muted" data-aos="fade" data-aos-delay="300">Welcome</h1>
+<h1 class="display-4 text-center text-black-50" data-aos="fade" data-aos-delay="500">Hentai Gallery</h1>
+
+<div>
+    <div class="container bounce animated">
+        <div class="row">
+            <div class="col"></div>
+            <div class="col text-center align-self-center">
+                <p class="text-left" style="font-size: 21px;color: rgb(255,255,255);margin-bottom: -16px;"><i class="fa fa-image"></i>&nbsp; Images</p>
+                <p style="font-size: 42px;">@Model._db.Images.Count()</p>
+            </div>
+            <div class="col"></div>
+        </div>
+    </div>
+</div>

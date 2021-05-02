@@ -1,0 +1,101 @@
+﻿@page
+@model HentaiPages.Pages.GalleryModel
+@{
+    ViewData["Title"] = "Gallery";
+}
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>HentaiPages</title>
+    <link rel="stylesheet" href="css/modal.css">
+    <link rel="stylesheet" href="css/site.css">
+</head>
+
+<body style="margin: 0; padding: 0;">
+    <div class="photo-gallery">
+        <div class="container">
+            <div class="intro">
+                <h2 class="text-center">Gallery</h2>
+                <p class="text-center">@Model.CurrentPage / @(Math.Ceiling((double)Model.ImagesCount/(double)Model.PageSize))</p>
+                <ul class="pagination justify-content-center">
+                    <li class="page-item">
+                        <a asp-page="/Gallery"
+                           asp-route-CurrentPage="1"
+                           asp-route-ShowLikedOnly="@Model.ShowLikedOnly"
+                           class="page-link">First</a>
+                    </li>
+                    <li class="page-item @(Model.CurrentPage <= 1 ? "disabled":"")">
+                        <a asp-page="/Gallery"
+                           asp-route-CurrentPage="@(Model.CurrentPage - 1)"
+                           asp-route-ShowLikedOnly="@Model.ShowLikedOnly"
+                           class="page-link">Previous</a>
+                    </li>
+                    <li class="page-item  @(Model.CurrentPage >= Math.Ceiling((double)Model.ImagesCount/(double)Model.PageSize) ? "disabled":"")">
+                        <a asp-page="/Gallery"
+                           asp-route-CurrentPage="@(Model.CurrentPage + 1)"
+                           asp-route-ShowLikedOnly="@Model.ShowLikedOnly"
+                           class="page-link">Next</a>
+                    </li>
+                    <li class="page-item">
+                        <a asp-page="/Gallery"
+                           asp-route-CurrentPage="@(Math.Ceiling((double)Model.ImagesCount/(double)Model.PageSize))"
+                           asp-route-ShowLikedOnly="@Model.ShowLikedOnly"
+                           class="page-link">Last</a>
+                    </li>
+                </ul>
+                <br>
+                <ul class="pagination justify-content-center">
+                    <li class="page-item">
+                        <a asp-page="/Gallery"
+                           asp-route-CurrentPage="@Model.CurrentPage"
+                           asp-route-ShowLikedOnly="false"
+                           class="page-link">All</a>
+                    </li>
+                    <li class="page-item">
+                        <a asp-page="/Gallery"
+                           asp-route-CurrentPage="@Model.CurrentPage"
+                           asp-route-ShowLikedOnly="true"
+                           class="page-link">Liked</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="row photos">
+                @for(int i = 0; i < Model.ImageIds.Length; i++)
+                {
+                    <div class="col-sm-6 col-md-4 col-lg-3 item">
+                        <img class="img-fluid" src="/api/images/GetImageDataById/@Model.ImageIds[i]" onclick="openModal(@Html.Raw(Json.Serialize(Model.ImageIds)), @i);">
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="close">&times;</span><br>
+            </div>
+            <div class="modal-body">
+                <div id="displayImage"></div>
+                <div id="descriptionDiv">
+                    <p id="uploadDate">this is test content</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="likeButton" onclick="setFavourite(); this.disabled = true;" on="" ></button>
+                <button id="downloadButton" onclick="download();" on="" >Download</button>
+                <button id="deleteButton" onclick="deleteImage();" on="" >Delete</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+    <script src="js/modal.js"></script>
+</body>
+
+</html>

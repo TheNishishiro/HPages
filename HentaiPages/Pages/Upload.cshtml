@@ -1,0 +1,24 @@
+﻿@page
+@model HentaiPages.Pages.UploadModel
+@{
+    ViewData["Title"] = "Upload";
+}
+<link rel="stylesheet" href="assets/css/Login-Form-Clean.css">
+
+
+<div class="login-clean">
+    <form method="post" style="background-color: rgb(35,35,35, 0.8);"  enctype="multipart/form-data">
+        <h2 class="sr-only">Login Form</h2>
+        <div class="illustration"><i class="icon ion-ios-navigate" style="color: rgb(226,226,226, 0.8);"></i></div>
+        <div class="form-group">
+            <p style="color:white; text-align: center; font-size:22px;">Upload files</p>
+            <input asp-for="@Model.Images" multiple class="form-control" style="background-color: rgb(16,16,16, 0.8);">
+        </div>
+        <div class="form-group">
+            <textarea  asp-for="@Model.ImageUrl" class="form-control" style="height: 100px;background-color: rgb(16,16,16, 0.8);"></textarea>
+        </div>
+        <div class="form-group">
+            <button asp-page-handler="UploadFile" class="btn btn-primary btn-block" type="submit" style="background-color: rgb(99,99,99);">Upload</button>
+        </div>
+    </form>
+</div>
