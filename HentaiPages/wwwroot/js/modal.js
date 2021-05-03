@@ -62,13 +62,17 @@ async function setImage() {
     }
 }
 
+function hideModal() {
+    modal.style.display = "none";
+}
+
 span.onclick = function() {
-  modal.style.display = "none";
+    hideModal();
 }
 
 window.onclick = function(event) {
   if (event.target == modal) {
-    modal.style.display = "none";
+      hideModal();
   }
 }
 
@@ -104,6 +108,7 @@ async function deleteImage() {
 
     if (confirm('Are you sure you want to delete this image?')) {
         ExecuteAPICall(constructedUri);
+        hideModal();
     }
 }
 
