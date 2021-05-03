@@ -17,9 +17,6 @@ async function openModal(avaiableIds, currentId) {
     currentArrayId = currentId;
     currentlyAvailableIds = avaiableIds;
 
-    console.log(currentArrayId);
-    console.log(avaiableIds);
-
     setImage();
     modal.style.display = "block";
 }
