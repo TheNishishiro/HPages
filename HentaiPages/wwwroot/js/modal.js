@@ -7,6 +7,7 @@ var deleteButton = document.getElementById("deleteButton");
 var downloadButton = document.getElementById("downloadButton");
 
 var uploadDate = document.getElementById("uploadDate");
+var headerId = document.getElementById("headerId");
 
 var currentImageId = 0;
 var currentArrayId = 0;
@@ -53,6 +54,7 @@ async function setImage() {
     console.log(image);
 
     uploadDate.innerHTML = "Upload date: " + ISODateToDateString(image["uploadDate"]);
+    headerId.innerHTML = image["imageId"];
 
     if (image["favourite"]) {
         likeButton.textContent  = "💔";
