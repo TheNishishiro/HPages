@@ -54,10 +54,10 @@ async function setImage() {
     headerId.innerHTML = image["imageId"];
 
     if (image["favourite"]) {
-        likeButton.textContent  = "💔";
+        likeButton.textContent = "💔";
     }
     else {
-        likeButton.textContent  = "💗";
+        likeButton.textContent = "💗";
     }
 }
 
@@ -98,8 +98,9 @@ document.onkeydown = async function(evt) {
 
 async function setFavourite() {
     var constructedUri = "/api/images/ToggleLikeImage/" + currentImageId;
-
     ExecuteAPICall(constructedUri);
+    alert("Image state toggled!");
+    setImage();
 }
 
 async function deleteImage() {
