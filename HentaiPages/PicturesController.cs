@@ -19,10 +19,12 @@ namespace HentaiPages
     public class PicturesController : ControllerBase
     {
         private readonly HentaiDbContext _db;
+        private readonly Random rnd;
 
         public PicturesController(HentaiDbContext db)
         {
             _db = db;
+            rnd = new Random();
         }
 
         [HttpGet("{id}")]
@@ -67,6 +69,14 @@ namespace HentaiPages
             await _db.SaveChangesAsync();
 
             return true;
+        }
+
+        [HttpGet]
+        public async Task<long> Random()
+        {
+            var ids = await _db.Images.Select(x => x.ImageId).ToListAsync();
+            var id = ids[rnd.Next(ids.Count)];
+            return id;
         }
     }
 }

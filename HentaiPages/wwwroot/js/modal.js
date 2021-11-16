@@ -2,6 +2,7 @@
 var btn = document.getElementById("myBtn");
 var span = document.getElementsByClassName("close")[0];
 var displayImage = document.getElementById("displayImage");
+var displayImageFull = document.getElementById("displayImageFull");
 var likeButton = document.getElementById("likeButton");
 var deleteButton = document.getElementById("deleteButton");
 var downloadButton = document.getElementById("downloadButton");
@@ -39,12 +40,35 @@ function ISODateToDateString(date) {
     return date.getFullYear()+'-' + (date.getMonth()+1) + '-'+date.getDate();
 }
 
+async function setRandomImage()
+{
+    const response = await fetch("/api/images/Random");
+    currentImageId = await response.json();
+    
+    var src = "/api/images/GetImageDataById/" + currentImageId;
+    displayImageFull.style.backgroundImage = "url('" + src + "')";
+
+    var image = await getImage();
+
+    console.log(src);
+    console.log(image);
+
+    headerId.innerHTML = image["imageId"];
+
+    if (image["favourite"]) {
+        likeButton.textContent = "💔";
+    }
+    else {
+        likeButton.textContent = "💗";
+    }
+}
+
 async function setImage() {
     currentImageId = currentlyAvailableIds[currentArrayId];
 
     var src = "/api/images/GetImageDataById/" + currentImageId;
     displayImage.style.backgroundImage = "url('" + src + "')";
-
+    
     var image = await getImage();
 
     console.log(src);

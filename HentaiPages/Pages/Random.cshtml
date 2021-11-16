@@ -1,0 +1,40 @@
+﻿@page
+@model HentaiPages.Pages.RandomModel
+@{
+    ViewData["Title"] = "Random";
+}
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>HentaiPages</title>
+    <link rel="stylesheet" href="css/modal.css">
+    <link rel="stylesheet" href="css/site.css">
+</head>
+<body style="margin: 0; padding: 0;" onload="setRandomImage()">
+    <div id="myModal" class="modal" style="display: block">
+        <div class="modal-content">
+            <div class="modal-header">
+                <p style="float: left" id="headerId">Image Id</p>
+                <span class="close">&times;</span><br>
+            </div>
+            <div class="modal-body">
+                <div id="displayImageFull"></div>
+            </div>
+            <div class="modal-footer">
+                <button id="randomButton" onclick="setRandomImage();" on="" >Random</button>
+                <button id="likeButton" onclick="setFavourite();" on="" ></button>
+                <button id="downloadButton" onclick="download();" on="" >Download</button>
+                <button id="deleteButton" onclick="deleteImage();" on="" >Delete</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+    <script src="js/modal.js"></script>
+</body>
+</html>

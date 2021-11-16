@@ -79,6 +79,17 @@ body {
   padding: 0;
 }
 
+#displayImageFull {
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+  height: 100%;
+  width: 100%;
+  float: left;
+  margin: 0;
+  padding: 0;
+}
+
 #descriptionDiv {
     position: relative;
     height: 100%;
