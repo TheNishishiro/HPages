@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using HentaiPages.Database;
 using HentaiPages.Database.Tables;
+using HentaiPages.Models;
 using HentaiPages.Utilities;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc;
@@ -24,7 +25,7 @@ namespace HentaiPages.Pages
         public int ImagesCount { get; set; }
         [BindProperty(SupportsGet = true)]
         public bool ShowLikedOnly { get; set; } = false;
-        public long[] ImageIds { get; set; }
+        public GalleryEntry[] ImageIds { get; set; }
 
         public GalleryModel(HentaiDbContext db)
         {
@@ -35,12 +36,17 @@ namespace HentaiPages.Pages
         {
             var imageQuery = _db.Images.Where(x => !ShowLikedOnly || ShowLikedOnly == x.Favourite)
                 .OrderByDescending(x => x.ImageId)
-                .Select(x => x.ImageId);
+                .Select(x => new {x.ImageId, x.ContentType});
 
             ImagesCount = imageQuery.Count();
             ImageIds = await imageQuery
                 .Skip((CurrentPage - 1) * PageSize)
                 .Take(PageSize)
+                .Select(x => new GalleryEntry()
+                {
+                    Id = x.ImageId,
+                    IsVideo = x.ContentType.Contains("mp4")
+                })
                 .ToArrayAsync();
         }
 

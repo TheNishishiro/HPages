@@ -6,6 +6,9 @@ var displayImageFull = document.getElementById("displayImageFull");
 var likeButton = document.getElementById("likeButton");
 var deleteButton = document.getElementById("deleteButton");
 var downloadButton = document.getElementById("downloadButton");
+var modalVideoDiv = document.getElementById("modalVideoDiv");
+var modalVideoPlayer = document.getElementById("modalVideoPlayer");
+var video = document.getElementById("video");
 
 var uploadDate = document.getElementById("uploadDate");
 var headerId = document.getElementById("headerId");
@@ -14,11 +17,11 @@ var currentImageId = 0;
 var currentArrayId = 0;
 var currentlyAvailableIds = [];
 
-async function openModal(avaiableIds, currentId) {
+async function openModal(availableIds, currentId) {
     currentArrayId = currentId;
-    currentlyAvailableIds = avaiableIds;
+    currentlyAvailableIds = availableIds;
 
-    setImage();
+    await setImage();
     modal.style.display = "block";
 }
 
@@ -32,7 +35,6 @@ async function ExecuteAPICall(constructedUri) {
 async function getImage() {
     const response = await fetch("/api/images/GetImageById/" + currentImageId);
     return response.json();
-    console.log(d);
 }
 
 function ISODateToDateString(date) {
@@ -44,11 +46,11 @@ async function setRandomImage()
 {
     const response = await fetch("/api/images/Random");
     currentImageId = await response.json();
-    
-    var src = "/api/images/GetImageDataById/" + currentImageId;
+
+    let src = "/api/images/GetImageDataById/" + currentImageId;
     displayImageFull.style.backgroundImage = "url('" + src + "')";
 
-    var image = await getImage();
+    let image = await getImage();
 
     console.log(src);
     console.log(image);
@@ -66,10 +68,20 @@ async function setRandomImage()
 async function setImage() {
     currentImageId = currentlyAvailableIds[currentArrayId];
 
-    var src = "/api/images/GetImageDataById/" + currentImageId;
+    let src = "/api/images/GetImageDataById/" + currentImageId;
     displayImage.style.backgroundImage = "url('" + src + "')";
+    let image = await getImage();
     
-    var image = await getImage();
+    console.log(modalVideoDiv.style.display);
+    modalVideoDiv.style.display = "none";
+    
+    if (image["contentType"] === "video/mp4") {
+        modalVideoDiv.style.display = "";
+        video.pause();
+        modalVideoPlayer.src = "api/images/GetImageDataById/" + currentImageId;
+        video.load();
+        video.play();
+    }
 
     console.log(src);
     console.log(image);
@@ -94,50 +106,50 @@ span.onclick = function() {
 }
 
 window.onclick = function(event) {
-  if (event.target == modal) {
+  if (event.target === modal) {
       hideModal();
   }
 }
 
 document.onkeydown = async function(evt) {
     evt = evt || window.event;
-    if (evt.keyCode == 27) {
+    if (evt.keyCode === 27) {
         window.event.returnValue = false;
         window.event.cancelBubble = true;
         modal.style.display = "none";
     }
-    else if (evt.keyCode == 37) {
+    else if (evt.keyCode === 37) {
         if (currentArrayId > 0) {
             currentArrayId--;
         }
-        setImage();
+        await setImage();
     }
-    else if (evt.keyCode == 39) {
+    else if (evt.keyCode === 39) {
         if (currentArrayId < currentlyAvailableIds.length) {
             currentArrayId++;
         }
-        setImage();
+        await setImage();
     }
 };
 
 async function setFavourite() {
-    var constructedUri = "/api/images/ToggleLikeImage/" + currentImageId;
-    ExecuteAPICall(constructedUri);
+    let constructedUri = "/api/images/ToggleLikeImage/" + currentImageId;
+    await ExecuteAPICall(constructedUri);
     alert("Image state toggled!");
-    setImage();
+    await setImage();
 }
 
 async function deleteImage() {
-    var constructedUri = "/api/images/DeleteImage/" + currentImageId;
+    let constructedUri = "/api/images/DeleteImage/" + currentImageId;
 
     if (confirm('Are you sure you want to delete this image?')) {
-        ExecuteAPICall(constructedUri);
+        await ExecuteAPICall(constructedUri);
         hideModal();
     }
 }
 
 function download() {
-    var a = document.createElement("a");
+    let a = document.createElement("a");
     a.href = "/api/images/GetImageDataById/" + currentImageId;
     a.setAttribute("download", currentImageId + ".png");
     a.click();

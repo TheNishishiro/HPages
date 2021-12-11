@@ -17,13 +17,17 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="System.Drawing.Common" Version="4.7.0" />
+    <PackageReference Include="System.Drawing.Common" Version="5.0.3" />
   </ItemGroup>
 
   <ItemGroup>
     <Compile Update="Pages\RandomModel.cs">
       <DependentUpon>Random.cshtml</DependentUpon>
     </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SimpleImageComparisonClassLibrary\SimpleImageComparisonClassLibrary.csproj" />
   </ItemGroup>
 
 </Project>

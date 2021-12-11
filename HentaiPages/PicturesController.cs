@@ -1,15 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using HentaiPages.Database;
 using HentaiPages.Database.Tables;
-using HentaiPages.Utilities;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using System.Drawing;
+using SimpleImageComparisonClassLibrary;
+using Image = HentaiPages.Database.Tables.Image;
 
 namespace HentaiPages
 {
@@ -39,7 +40,7 @@ namespace HentaiPages
         public async Task<ActionResult> GetImageDataById(long id)
         {
             var image = await _db.Images.FirstOrDefaultAsync(c => c.ImageId == id);
-            return File(image?.Data, "application/octet-stream");
+            return File(image?.Data, image?.ContentType);
         }
 
         [HttpGet("{id}")]
@@ -77,6 +78,46 @@ namespace HentaiPages
             var ids = await _db.Images.Select(x => x.ImageId).ToListAsync();
             var id = ids[rnd.Next(ids.Count)];
             return id;
+        }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<List<long>>> FindSimilar(long id)
+        {
+            var duplicates = new List<long>();
+            
+            var image = await _db.Images.FirstOrDefaultAsync(c => c.ImageId == id);
+            if (image == null)
+                return duplicates;
+
+            var commonSize = new Size(500, 500);
+            
+            using var ms = new MemoryStream(image.Data);
+            var source = ImageTool.ResizeImage(System.Drawing.Image.FromStream(ms), commonSize);
+
+            var ids = await _db.Images.Where(c => c.ImageId != id).Select(x=>x.ImageId).ToListAsync();
+
+            int processed = 0;
+            using var sw = new StreamWriter(@"D:\compareInfo.txt");
+
+            foreach (var i in ids)
+            {
+                var imageData = await _db.Images.Where(c => c.ImageId == i).Select(x=>x.Data).FirstOrDefaultAsync();
+
+                try
+                {
+                    using var ms2 = new MemoryStream(imageData);
+                    var imgFromStream = System.Drawing.Image.FromStream(ms2);
+                    var img = ImageTool.ResizeImage(imgFromStream, commonSize);
+                    sw.WriteLine($"{i}/{ids.Count}");
+                    var difference = ImageTool.GetPercentageDifference(source, img);
+                    if (difference < 0.1f)
+                        duplicates.Add(i);
+                }
+                catch (Exception)
+                {
+                }
+            }
+            return duplicates;
         }
     }
 }

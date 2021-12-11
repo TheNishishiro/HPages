@@ -10,6 +10,7 @@ using HentaiPages.Database.Tables;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.StaticFiles;
 
 namespace HentaiPages.Pages
 {
