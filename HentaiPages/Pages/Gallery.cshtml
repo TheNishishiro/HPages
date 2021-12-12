@@ -64,7 +64,7 @@
                 </ul>
             </div>
             <div class="row photos">
-                @for(int i = 0; i < Model.ImageIds.Length; i++)
+                @for(var i = 0; i < Model.ImageIds.Length; i++)
                 {
                     <div class="col-sm-6 col-md-4 col-lg-3 item">
                         @if (Model.ImageIds[i].IsVideo)
@@ -89,7 +89,7 @@
                 <p style="float: left" id="headerId">Image Id</p>
                 <span class="close">&times;</span><br>
             </div>
-            <div class="modal-body">
+            <div class="modal-body"  style="overflow-y: scroll;">
                 <div id="displayImage">
                     <div id="modalVideoDiv">
                         <video class="img-fluid" controls loop id="video">
@@ -99,6 +99,123 @@
                 </div>
                 <div id="descriptionDiv">
                     <p id="uploadDate">this is test content</p>
+                    <div id="tagPicker">
+                         <label>
+                             <input type="checkbox" id="checkboxFeet" value="Feet"> Feet
+                         </label>
+                         <label>
+                             <input type="checkbox" id="checkboxThighs" value="Thighs"> Thighs
+                         </label>
+                         <label>
+                             <input type="checkbox" id="checkboxLegwear" value="Leg-wear"> Leg-wear
+                         </label>
+                         <label>
+                             <input type="checkbox" id="checkboxButt" value="Butt"> Butt
+                         </label>
+                         <label>
+                             <input type="checkbox" id="checkboxCreampie" value="Creampie"> Creampie
+                         </label>
+                         <label>
+                             <input type="checkbox" id="checkboxSex" value="Sex"> Sex
+                         </label>
+                         <label>
+                             <input type="checkbox" id="checkboxMasturbation" value="Masturbation"> Masturbation
+                         </label>
+                         <label>
+                             <input type="checkbox" id="checkboxBoobies" value="Boobies"> Boobies
+                         </label>
+                         <label>
+                             <input type="checkbox" id="checkboxPantsu" value="Pantsu"> Pantsu
+                         </label>
+                         <label>
+                             <input type="checkbox" id="checkboxYuri" value="Yuri"> Yuri
+                         </label>
+                         <label>
+                             <input type="checkbox" id="checkboxCatgirl" value="Catgirl"> Catgirl
+                         </label>
+                         <label>
+                             <input type="checkbox" id="checkboxGif" value="Gif"> Gif
+                         </label>
+                         <label>
+                             <input type="checkbox" id="checkboxIrl" value="Irl"> Irl
+                         </label>
+                         <label>
+                             <input type="checkbox" id="checkboxEcchi" value="Ecchi"> Ecchi
+                         </label>
+                         <label>
+                             <input type="checkbox" id="checkboxWet" value="Wet"> Wet
+                         </label>
+                         <label>
+                             <input type="checkbox" id="checkboxPOV" value="POV"> POV
+                         </label>
+                         <label>
+                             <input type="checkbox" id="checkboxHandjob" value="Handjob"> Handjob
+                         </label>
+                         <label>
+                             <input type="checkbox" id="checkboxGroup" value="Group sex"> Group sex
+                         </label>
+                         <label>
+                             <input type="checkbox" id="checkboxSchoolgirl" value="School girl"> School girl
+                         </label>
+                         <label>
+                             <input type="checkbox" id="checkboxSecretary" value="Secretary"> Secretary
+                         </label>
+                         <label>
+                             <input type="checkbox" id="checkboxCondom" value="Condom"> Condom
+                         </label>
+                         <label>
+                             <input type="checkbox" id="checkboxGrayscale" value="Grayscale"> Grayscale
+                         </label>
+                         <label>
+                             <input type="checkbox" id="checkboxHiding" value="Hiding"> Hiding
+                         </label>
+                         <label>
+                             <input type="checkbox" id="checkboxCasual" value="Casual"> Casual
+                         </label>
+                         <label>
+                             <input type="checkbox" id="checkboxInviting" value="Inviting"> Inviting
+                         </label>
+                         <label>
+                             <input type="checkbox" id="checkboxCowgirl" value="Cowgirl"> Cowgirl
+                         </label>
+                         <label>
+                             <input type="checkbox" id="checkboxLegsSpreading" value="Legs spreading"> Legs spreading
+                         </label>
+                         <label>
+                             <input type="checkbox" id="checkboxMaid" value="Maid"> Maid
+                         </label>
+                         <label>
+                             <input type="checkbox" id="checkboxBlowjob" value="Blowjob"> Blowjob
+                         </label>
+                         <label>
+                             <input type="checkbox" id="checkboxLingerie" value="Lingerie"> Lingerie
+                         </label>
+                         <label>
+                             <input type="checkbox" id="checkboxTattoo" value="Tattoo"> Uterus tattoo
+                         </label>
+                         <label>
+                             <input type="checkbox" id="checkboxPussy" value="Pussy"> Pussy
+                         </label>
+                         <label>
+                             <input type="checkbox" id="checkboxBlushing" value="Blushing"> Blushing
+                         </label>
+                         <label>
+                             <input type="checkbox" id="checkboxHappy" value="Happy"> Happy
+                         </label>
+                         <label>
+                             <input type="checkbox" id="checkboxBoobjob" value="Boobjob"> Boobjob
+                         </label>
+                         <label>
+                             <input type="checkbox" id="checkboxPussyEating" value="Pussy eating"> Pussy eating
+                         </label>
+                         <label>
+                             <input type="checkbox" id="checkboxCumshot" value="Cumshot"> Cumshot
+                         </label>
+                        </div>
+                    <div>
+                        <button id="toggleTagsButton" onclick="toggleTags();" on="" >Toggle tags</button>
+                        <button id="saveTagsButton" onclick="saveTagsSettings();" on="" >Save tags</button>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">

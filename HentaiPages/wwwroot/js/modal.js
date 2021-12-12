@@ -9,6 +9,8 @@ var downloadButton = document.getElementById("downloadButton");
 var modalVideoDiv = document.getElementById("modalVideoDiv");
 var modalVideoPlayer = document.getElementById("modalVideoPlayer");
 var video = document.getElementById("video");
+var saveTagsButton = document.getElementById("saveTagsButton");
+var tagPickerDiv = document.getElementById("tagPicker");
 
 var uploadDate = document.getElementById("uploadDate");
 var headerId = document.getElementById("headerId");
@@ -16,6 +18,11 @@ var headerId = document.getElementById("headerId");
 var currentImageId = 0;
 var currentArrayId = 0;
 var currentlyAvailableIds = [];
+var allTags = ["Feet", "Thighs", "Legwear", "Butt", "Creampie", "Sex", "Masturbation", 
+    "Boobies", "Pantsu", "Yuri", "Catgirl", "Gif", "Irl", "Ecchi", "Wet", "POV", "Handjob", "Group", "Schoolgirl",
+    "Secretary", "Condom", "Grayscale", "Casual", "Inviting", "Cowgirl", "LegsSpreading", "Maid", "Blowjob", "Lingerie",
+    "Tattoo", "Pussy", "Blushing", "Happy", "Boobjob", "PussyEating", "Cumshot"
+]
 
 async function openModal(availableIds, currentId) {
     currentArrayId = currentId;
@@ -34,6 +41,12 @@ async function ExecuteAPICall(constructedUri) {
 
 async function getImage() {
     const response = await fetch("/api/images/GetImageById/" + currentImageId);
+    console.log(response);
+    return response.json();
+}
+
+async function getImagTags() {
+    const response = await fetch("/api/images/GetImageTagsById/" + currentImageId);
     return response.json();
 }
 
@@ -71,8 +84,6 @@ async function setImage() {
     let src = "/api/images/GetImageDataById/" + currentImageId;
     displayImage.style.backgroundImage = "url('" + src + "')";
     let image = await getImage();
-    
-    console.log(modalVideoDiv.style.display);
     modalVideoDiv.style.display = "none";
     
     if (image["contentType"] === "video/mp4") {
@@ -83,18 +94,29 @@ async function setImage() {
         video.play();
     }
 
-    console.log(src);
-    console.log(image);
-
     uploadDate.innerHTML = "Upload date: " + ISODateToDateString(image["uploadDate"]);
     headerId.innerHTML = image["imageId"];
-
     if (image["favourite"]) {
         likeButton.textContent = "💔";
     }
     else {
         likeButton.textContent = "💗";
     }
+
+    let tags = await getImagTags();
+    if (tags === null)
+        tags = [];
+    for (const tag of tags) {
+        let checkboxId = "checkbox"+tag;
+        document.getElementById(checkboxId).checked = true;
+    }
+    let difference = allTags.filter(x => !tags.includes(x));
+    for (const tag of difference) {
+        let checkboxId = "checkbox"+tag;
+        document.getElementById(checkboxId).checked = false;
+    }
+
+    sortTagsPicker();
 }
 
 function hideModal() {
@@ -153,4 +175,62 @@ function download() {
     a.href = "/api/images/GetImageDataById/" + currentImageId;
     a.setAttribute("download", currentImageId + ".png");
     a.click();
+}
+
+function toggleTags() {
+    if (tagPickerDiv.style.display === "none")
+    {
+        saveTagsButton.style.display = "";
+        tagPickerDiv.style.display = "";
+    }
+    else
+    {
+        saveTagsButton.style.display = "none";
+        tagPickerDiv.style.display = "none"
+    }
+}
+
+function sortTagsPicker() {
+    $('#tagPicker label').sort(function(a, b) {
+        var $a = $(a).find(':checkbox'),
+            $b = $(b).find(':checkbox');
+
+        if ($a.is(':checked') && !$b.is(':checked'))
+            return -1;
+        else if (!$a.is(':checked') && $b.is(':checked'))
+            return 1;
+
+        if ($a.val() < $b.val())
+            return -1;
+        else if ($a.val() > $b.val())
+            return 1;
+        
+        return 0;
+    }).appendTo('#tagPicker');
+
+    $('#tagPicker .default:last, #tagPicker :checked:last').closest('label').after('');
+}
+
+async function saveTagsSettings() {
+    let requestUrl = "/api/images/SetTags/" + currentImageId;
+    let activeTags = [];
+
+    for (const tag of allTags) {
+        let checkboxId = "checkbox"+tag;
+        if (document.getElementById(checkboxId).checked === true)
+        {
+            activeTags.push(tag);
+        }
+    }
+    
+    let body = JSON.stringify(activeTags);
+    console.log(body);
+    await fetch(requestUrl,
+        {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: body
+        });
 }
