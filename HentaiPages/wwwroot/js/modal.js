@@ -21,7 +21,7 @@ var currentlyAvailableIds = [];
 var allTags = ["Feet", "Thighs", "Legwear", "Butt", "Creampie", "Sex", "Masturbation", 
     "Boobies", "Pantsu", "Yuri", "Catgirl", "Gif", "Irl", "Ecchi", "Wet", "POV", "Handjob", "Group", "Schoolgirl",
     "Secretary", "Condom", "Grayscale", "Casual", "Inviting", "Cowgirl", "LegsSpreading", "Maid", "Blowjob", "Lingerie",
-    "Tattoo", "Pussy", "Blushing", "Happy", "Boobjob", "PussyEating", "Cumshot"
+    "Tattoo", "Pussy", "Blushing", "Happy", "Boobjob", "PussyEating", "Cumshot", "Toys", "Fingering", "Video", "Footjob", "Hiding"
 ]
 
 async function openModal(availableIds, currentId) {
