@@ -48,3 +48,11 @@
 label {
     margin: 5px 5px 5px 5px;
 }
+
+.editor-label{
+    display: inline
+}
+
+.editor-field{
+    display: inline
+}

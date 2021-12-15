@@ -11,6 +11,7 @@ var modalVideoPlayer = document.getElementById("modalVideoPlayer");
 var video = document.getElementById("video");
 var saveTagsButton = document.getElementById("saveTagsButton");
 var tagPickerDiv = document.getElementById("tagPicker");
+var filterTagsPickerDiv = document.getElementById("filterTagsPicker");
 
 var uploadDate = document.getElementById("uploadDate");
 var headerId = document.getElementById("headerId");
@@ -21,7 +22,8 @@ var currentlyAvailableIds = [];
 var allTags = ["Feet", "Thighs", "Legwear", "Butt", "Creampie", "Sex", "Masturbation", 
     "Boobies", "Pantsu", "Yuri", "Catgirl", "Gif", "Irl", "Ecchi", "Wet", "POV", "Handjob", "Group", "Schoolgirl",
     "Secretary", "Condom", "Grayscale", "Casual", "Inviting", "Cowgirl", "LegsSpreading", "Maid", "Blowjob", "Lingerie",
-    "Tattoo", "Pussy", "Blushing", "Happy", "Boobjob", "PussyEating", "Cumshot", "Toys", "Fingering", "Video", "Footjob", "Hiding"
+    "Tattoo", "Pussy", "Blushing", "Happy", "Boobjob", "PussyEating", "Cumshot", "Toys", "Fingering", "Video", "Footjob", "Hiding", "Dialogs",
+    "Doggy", "NotHuman", "Milf", "Nurse"
 ]
 
 async function openModal(availableIds, currentId) {
@@ -187,6 +189,17 @@ function toggleTags() {
     {
         saveTagsButton.style.display = "none";
         tagPickerDiv.style.display = "none"
+    }
+}
+
+function toggleFilterTags() {
+    if (filterTagsPickerDiv.style.display === "none")
+    {
+        filterTagsPickerDiv.style.display = "";
+    }
+    else
+    {
+        filterTagsPickerDiv.style.display = "none"
     }
 }
 

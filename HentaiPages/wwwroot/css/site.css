@@ -100,3 +100,15 @@ body {
     margin: 0;
     padding: 0;
 }
+
+select option[value = ""] {
+  background: #FFFFFF;
+}
+
+select option[value = "true"] {
+  background: #ADFFA5;
+}
+
+select option[value = "false"] {
+  background: #FF7F7F;
+}

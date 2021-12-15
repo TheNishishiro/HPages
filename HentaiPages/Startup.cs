@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using HentaiPages.Database;
+using HentaiPages.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -30,6 +31,7 @@ namespace HentaiPages
         {
             services.AddRazorPages();
             services.AddEntityFrameworkSqlite().AddDbContext<HentaiDbContext>();
+            services.AddSingleton<IFilterService, FilterService>();
             services.Configure<KestrelServerOptions>(options =>
             {
                 options.Limits.MaxRequestBodySize = int.MaxValue; 

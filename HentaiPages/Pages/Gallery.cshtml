@@ -1,4 +1,8 @@
 ﻿@page
+@using System.Reflection
+@using System.ComponentModel.DataAnnotations
+@using HentaiPages.CustomAttributes
+@using HentaiPages.Models.Enums
 @model HentaiPages.Pages.GalleryModel
 @{
     ViewData["Title"] = "Gallery";
@@ -20,46 +24,162 @@
         <div class="container">
             <div class="intro">
                 <h2 class="text-center">Gallery</h2>
+                <form id="record-filter-form" method="post">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item">
+                            <button asp-page-handler="ApplyFilters" class="page-link" type="submit" asp-route-CurrentPage="@Model.CurrentPage">Apply</button>
+                        </li>
+                        <li class="page-item">
+                            <button class="page-link" onclick="toggleFilterTags();" on="" type="button">Toggle tags</button>
+                        </li>
+                        <li class="page-item">
+                            <button asp-page-handler="UntaggedFilter" class="page-link" type="submit" asp-route-CurrentPage="@Model.CurrentPage">Untagged</button>
+                        </li>
+                        <li class="page-item">
+                            <button asp-page-handler="ResetFilters" class="page-link" type="submit" asp-route-CurrentPage="@Model.CurrentPage">Reset</button>
+                        </li>
+                    </ul>
+                    <div id="filterTagsPicker"  style="display: none">
+                        <div class="illustration">
+                            <h1 id="filter-heading" class="text-center" style="color: #ffffff">Tag filter</h1>
+                        </div>
+                        <div class="form-row" style="color: #ffffff">
+                            <div class="col">
+                                @foreach (var filter in Model.GalleryFilter.Enumerate(FilterFieldType.Type))
+                                {
+                                    <label for="GalleryFilter_@filter.FieldName">@filter.DisplayText</label>
+                                    <select onchange="SetSelectBackgroundColor(this)" class="list-box tri-state" id="GalleryFilter_@filter.FieldName" name="GalleryFilter.@filter.FieldName" style="background-color: @(((bool?)filter.Property.GetValue(Model.GalleryFilter))==true ? "#ADFFA5" : (bool?)filter.Property.GetValue(Model.GalleryFilter) == false ? "#FF7F7F" : "#FFFFFF")">
+                                        @if ((bool?) filter.Property.GetValue(Model.GalleryFilter) == null)
+                                        {
+                                            <option selected="selected" value="">Not Set</option>
+                                            <option value="true">True</option>
+                                            <option value="false">False</option>
+                                        }
+                                        else if ((bool?) filter.Property.GetValue(Model.GalleryFilter) == true)
+                                        {
+                                            <option value="">Not Set</option>
+                                            <option selected="selected" value="true">True</option>
+                                            <option value="false">False</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="">Not Set</option>
+                                            <option value="true">True</option>
+                                            <option selected="selected" value="false">False</option>
+                                        }
+                                    </select>
+                                }
+                            </div>  
+                            <div class="col">
+                                @foreach (var filter in Model.GalleryFilter.Enumerate(FilterFieldType.Characteristic))
+                                {
+                                    <label for="GalleryFilter_@filter.FieldName">@filter.DisplayText</label>
+                                    <select class="list-box tri-state" 
+                                            id="GalleryFilter_@filter.FieldName" 
+                                            name="GalleryFilter.@filter.FieldName" 
+                                            onchange="SetSelectBackgroundColor(this)"
+                                            style="background-color: 
+                                                @(((bool?)filter.Property.GetValue(Model.GalleryFilter))==true ? "#ADFFA5" : (bool?)filter.Property.GetValue(Model.GalleryFilter) == false ? "#FF7F7F" : "#FFFFFF")">
+                                        @if ((bool?) filter.Property.GetValue(Model.GalleryFilter) == null)
+                                        {
+                                            <option selected="selected" value="">Not Set</option>
+                                            <option value="true">True</option>
+                                            <option value="false">False</option>
+                                        }
+                                        else if ((bool?) filter.Property.GetValue(Model.GalleryFilter) == true)
+                                        {
+                                            <option value="">Not Set</option>
+                                            <option selected="selected" value="true">True</option>
+                                            <option value="false">False</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="">Not Set</option>
+                                            <option value="true">True</option>
+                                            <option selected="selected" value="false">False</option>
+                                        }
+                                    </select>
+                                }
+                            </div>   
+                            <div class="col">
+                                @foreach (var filter in Model.GalleryFilter.Enumerate(FilterFieldType.Actions))
+                                {
+                                    <label for="GalleryFilter_@filter.FieldName">@filter.DisplayText</label>
+                                    <select onchange="SetSelectBackgroundColor(this)" class="list-box tri-state" id="GalleryFilter_@filter.FieldName" name="GalleryFilter.@filter.FieldName"style="background-color: @(((bool?)filter.Property.GetValue(Model.GalleryFilter))==true ? "#ADFFA5" : (bool?)filter.Property.GetValue(Model.GalleryFilter) == false ? "#FF7F7F" : "#FFFFFF")">
+                                        @if ((bool?) filter.Property.GetValue(Model.GalleryFilter) == null)
+                                        {
+                                            <option selected="selected" value="">Not Set</option>
+                                            <option value="true">True</option>
+                                            <option value="false">False</option>
+                                        }
+                                        else if ((bool?) filter.Property.GetValue(Model.GalleryFilter) == true)
+                                        {
+                                            <option value="">Not Set</option>
+                                            <option selected="selected" value="true">True</option>
+                                            <option value="false">False</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="">Not Set</option>
+                                            <option value="true">True</option>
+                                            <option selected="selected" value="false">False</option>
+                                        }
+                                    </select>
+                                }
+                            </div>  
+                            <div class="col">
+                                @foreach (var filter in Model.GalleryFilter.Enumerate(FilterFieldType.Profession))
+                                {
+                                    <label for="GalleryFilter_@filter.FieldName">@filter.DisplayText</label>
+                                    <select onchange="SetSelectBackgroundColor(this)" class="list-box tri-state" id="GalleryFilter_@filter.FieldName" name="GalleryFilter.@filter.FieldName"style="background-color: @(((bool?)filter.Property.GetValue(Model.GalleryFilter))==true ? "#ADFFA5" : (bool?)filter.Property.GetValue(Model.GalleryFilter) == false ? "#FF7F7F" : "#FFFFFF")">
+                                        @if ((bool?) filter.Property.GetValue(Model.GalleryFilter) == null)
+                                        {
+                                            <option selected="selected" value="">Not Set</option>
+                                            <option value="true">True</option>
+                                            <option value="false">False</option>
+                                        }
+                                        else if ((bool?) filter.Property.GetValue(Model.GalleryFilter) == true)
+                                        {
+                                            <option value="">Not Set</option>
+                                            <option selected="selected" value="true">True</option>
+                                            <option value="false">False</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="">Not Set</option>
+                                            <option value="true">True</option>
+                                            <option selected="selected" value="false">False</option>
+                                        }
+                                    </select>
+                                }
+                            </div>  
+                            <div class="col">
+                            </div>   
+                        </div>
+                    </div>
+                </form>
+                <hr>
                 <p class="text-center">@Model.CurrentPage / @(Math.Ceiling((double)Model.ImagesCount/(double)Model.PageSize))</p>
                 <ul class="pagination justify-content-center">
                     <li class="page-item">
                         <a asp-page="/Gallery"
                            asp-route-CurrentPage="1"
-                           asp-route-ShowLikedOnly="@Model.ShowLikedOnly"
                            class="page-link">First</a>
                     </li>
                     <li class="page-item @(Model.CurrentPage <= 1 ? "disabled":"")">
                         <a asp-page="/Gallery"
                            asp-route-CurrentPage="@(Model.CurrentPage - 1)"
-                           asp-route-ShowLikedOnly="@Model.ShowLikedOnly"
                            class="page-link">Previous</a>
                     </li>
                     <li class="page-item  @(Model.CurrentPage >= Math.Ceiling((double)Model.ImagesCount/(double)Model.PageSize) ? "disabled":"")">
                         <a asp-page="/Gallery"
                            asp-route-CurrentPage="@(Model.CurrentPage + 1)"
-                           asp-route-ShowLikedOnly="@Model.ShowLikedOnly"
                            class="page-link">Next</a>
                     </li>
                     <li class="page-item">
                         <a asp-page="/Gallery"
                            asp-route-CurrentPage="@(Math.Ceiling((double)Model.ImagesCount/(double)Model.PageSize))"
-                           asp-route-ShowLikedOnly="@Model.ShowLikedOnly"
                            class="page-link">Last</a>
-                    </li>
-                </ul>
-                <br>
-                <ul class="pagination justify-content-center">
-                    <li class="page-item">
-                        <a asp-page="/Gallery"
-                           asp-route-CurrentPage="@Model.CurrentPage"
-                           asp-route-ShowLikedOnly="false"
-                           class="page-link">All</a>
-                    </li>
-                    <li class="page-item">
-                        <a asp-page="/Gallery"
-                           asp-route-CurrentPage="@Model.CurrentPage"
-                           asp-route-ShowLikedOnly="true"
-                           class="page-link">Liked</a>
                     </li>
                 </ul>
             </div>
@@ -100,129 +220,12 @@
                 <div id="descriptionDiv">
                     <p id="uploadDate">this is test content</p>
                     <div id="tagPicker">
-                         <label>
-                             <input type="checkbox" id="checkboxFeet" value="Feet"> Feet
-                         </label>
-                         <label>
-                             <input type="checkbox" id="checkboxThighs" value="Thighs"> Thighs
-                         </label>
-                         <label>
-                             <input type="checkbox" id="checkboxLegwear" value="Leg-wear"> Leg-wear
-                         </label>
-                         <label>
-                             <input type="checkbox" id="checkboxButt" value="Butt"> Butt
-                         </label>
-                         <label>
-                             <input type="checkbox" id="checkboxCreampie" value="Creampie"> Creampie
-                         </label>
-                         <label>
-                             <input type="checkbox" id="checkboxSex" value="Sex"> Sex
-                         </label>
-                         <label>
-                             <input type="checkbox" id="checkboxMasturbation" value="Masturbation"> Masturbation
-                         </label>
-                         <label>
-                             <input type="checkbox" id="checkboxBoobies" value="Boobies"> Boobies
-                         </label>
-                         <label>
-                             <input type="checkbox" id="checkboxPantsu" value="Pantsu"> Pantsu
-                         </label>
-                         <label>
-                             <input type="checkbox" id="checkboxYuri" value="Yuri"> Yuri
-                         </label>
-                         <label>
-                             <input type="checkbox" id="checkboxCatgirl" value="Catgirl"> Catgirl
-                         </label>
-                         <label>
-                             <input type="checkbox" id="checkboxGif" value="Gif"> Gif
-                         </label>
-                         <label>
-                             <input type="checkbox" id="checkboxIrl" value="Irl"> Irl
-                         </label>
-                         <label>
-                             <input type="checkbox" id="checkboxEcchi" value="Ecchi"> Ecchi
-                         </label>
-                         <label>
-                             <input type="checkbox" id="checkboxWet" value="Wet"> Wet
-                         </label>
-                         <label>
-                             <input type="checkbox" id="checkboxPOV" value="POV"> POV
-                         </label>
-                         <label>
-                             <input type="checkbox" id="checkboxHandjob" value="Handjob"> Handjob
-                         </label>
-                         <label>
-                             <input type="checkbox" id="checkboxGroup" value="Group sex"> Group sex
-                         </label>
-                         <label>
-                             <input type="checkbox" id="checkboxSchoolgirl" value="School girl"> School girl
-                         </label>
-                         <label>
-                             <input type="checkbox" id="checkboxSecretary" value="Secretary"> Secretary
-                         </label>
-                         <label>
-                             <input type="checkbox" id="checkboxCondom" value="Condom"> Condom
-                         </label>
-                         <label>
-                             <input type="checkbox" id="checkboxGrayscale" value="Grayscale"> Grayscale
-                         </label>
-                         <label>
-                             <input type="checkbox" id="checkboxHiding" value="Hiding"> Hiding
-                         </label>
-                         <label>
-                             <input type="checkbox" id="checkboxCasual" value="Casual"> Casual
-                         </label>
-                         <label>
-                             <input type="checkbox" id="checkboxInviting" value="Inviting"> Inviting
-                         </label>
-                         <label>
-                             <input type="checkbox" id="checkboxCowgirl" value="Cowgirl"> Cowgirl
-                         </label>
-                         <label>
-                             <input type="checkbox" id="checkboxLegsSpreading" value="Legs spreading"> Legs spreading
-                         </label>
-                         <label>
-                             <input type="checkbox" id="checkboxMaid" value="Maid"> Maid
-                         </label>
-                         <label>
-                             <input type="checkbox" id="checkboxBlowjob" value="Blowjob"> Blowjob
-                         </label>
-                         <label>
-                             <input type="checkbox" id="checkboxLingerie" value="Lingerie"> Lingerie
-                         </label>
-                         <label>
-                             <input type="checkbox" id="checkboxTattoo" value="Tattoo"> Uterus tattoo
-                         </label>
-                         <label>
-                             <input type="checkbox" id="checkboxPussy" value="Pussy"> Pussy
-                         </label>
-                         <label>
-                             <input type="checkbox" id="checkboxBlushing" value="Blushing"> Blushing
-                         </label>
-                         <label>
-                             <input type="checkbox" id="checkboxHappy" value="Happy"> Happy
-                         </label>
-                         <label>
-                             <input type="checkbox" id="checkboxBoobjob" value="Boobjob"> Boobjob
-                         </label>
-                         <label>
-                             <input type="checkbox" id="checkboxPussyEating" value="Pussy eating"> Pussy eating
-                         </label>
-                         <label>
-                             <input type="checkbox" id="checkboxCumshot" value="Cumshot"> Cumshot
-                         </label>
-                         <label>
-                             <input type="checkbox" id="checkboxToys" value="Toys"> Toys
-                         </label>
-                         <label>
-                             <input type="checkbox" id="checkboxFingering" value="Fingering"> Fingering
-                         </label>
-                         <label>
-                             <input type="checkbox" id="checkboxVideo" value="Video"> Video
-                         </label>
-                         <label>
-                             <input type="checkbox" id="checkboxFootjob" value="Footjob"> Footjob
-                         </label>
+                        @foreach (var tag in Model.AvailableTags)
+                        {
+                            <label>
+                                <input type="checkbox" id="@string.Concat("checkbox", tag)" value="@tag"> @tag
+                            </label>
+                        }
                         </div>
                     <div>
                         <button id="toggleTagsButton" onclick="toggleTags();" on="" >Toggle tags</button>
