@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
+using System.Text;
 using System.Threading.Tasks;
 using HentaiPages.Database;
 using HentaiPages.Database.Tables;
+using HentaiPages.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -137,6 +141,37 @@ namespace HentaiPages.Controllers
             image.Tags = imageTags;
             _db.Update(image);
             await _db.SaveChangesAsync();
+        }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<bool>> Hash(long id)
+        {
+            var imageIds = await _db.Images
+                .AsNoTracking()
+                .Where(x=>!x.ContentType.Contains("gif") && !x.ContentType.Contains("mp4") && x.Hash != null)
+                .Select(x => x.ImageId).ToListAsync();
+
+            foreach (var idChunk in imageIds.ChunkBy(200))
+            {
+                foreach (var imageId in idChunk)
+                {
+                    try
+                    {
+                        var image = await _db.Images.FirstOrDefaultAsync(x => x.ImageId == imageId);
+                        
+                        image.Hash = image.Data.Hash();
+                    }
+                    catch (Exception)
+                    {
+                    
+                    }
+                
+                }
+            
+                await _db.SaveChangesAsync();
+            }
+
+            return true;
         }
 
         [HttpGet("{id}")]

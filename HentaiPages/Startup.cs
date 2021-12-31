@@ -32,6 +32,7 @@ namespace HentaiPages
             services.AddRazorPages();
             services.AddEntityFrameworkSqlite().AddDbContext<HentaiDbContext>();
             services.AddSingleton<IFilterService, FilterService>();
+            services.AddSingleton<IUploadService, UploadService>();
             services.Configure<KestrelServerOptions>(options =>
             {
                 options.Limits.MaxRequestBodySize = int.MaxValue; 
@@ -54,14 +55,14 @@ namespace HentaiPages
             var context = serviceProvider.GetService<HentaiDbContext>();
             context.Database.Migrate();
 
-            if (env.IsDevelopment())
-            {
+            //if (env.IsDevelopment())
+            //{
                 app.UseDeveloperExceptionPage();
-            }
-            else
-            {
-                app.UseExceptionHandler("/Error");
-            }
+            //}
+            //else
+            //{
+            //    app.UseExceptionHandler("/Error");
+            //}
 
             app.UseDefaultFiles();
             app.UseStaticFiles();

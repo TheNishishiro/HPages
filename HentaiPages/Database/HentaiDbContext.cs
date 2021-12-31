@@ -29,7 +29,9 @@ namespace HentaiPages.Database
             builder.Entity<TagsImages>().HasOne(c => c.Image).WithMany(c => c.Tags).HasForeignKey(c=>c.ImageId);
             builder.Entity<TagsImages>().HasOne(c => c.Tag).WithMany(c => c.Images).HasForeignKey(c => c.TagsId);
 
-            builder.Entity<Image>().HasIndex(c => new { c.ImageId, c.UploadDate });
+            builder.Entity<Image>().HasIndex(c => new { c.ImageId });
+            builder.Entity<Image>().HasIndex(c => new { c.UploadDate });
+            builder.Entity<Image>().HasIndex(c => new { c.Hash });
 
             base.OnModelCreating(builder);
         }

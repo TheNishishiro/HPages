@@ -12,6 +12,8 @@ namespace HentaiPages.Database.Tables
         public string ContentType { get; set; }
         public DateTime UploadDate { get; set; }
         public bool Favourite { get; set; }
+        public bool HasHash { get; set; }
+        public string Hash { get; set; }
         public ICollection<TagsImages> Tags { get; set; }
     }
 }

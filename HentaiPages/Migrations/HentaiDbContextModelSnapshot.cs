@@ -31,10 +31,18 @@ namespace HentaiPages.Migrations
                     b.Property<bool>("Favourite")
                         .HasColumnType("INTEGER");
 
+                    b.Property<bool>("HasHash")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Hash")
+                        .HasColumnType("TEXT");
+
                     b.Property<DateTime>("UploadDate")
                         .HasColumnType("TEXT");
 
                     b.HasKey("ImageId");
+
+                    b.HasIndex("Hash");
 
                     b.HasIndex("ImageId", "UploadDate");
 

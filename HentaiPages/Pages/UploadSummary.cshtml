@@ -1,0 +1,51 @@
+﻿@page
+@model HentaiPages.Pages.UploadSummary
+
+@{
+    ViewData["Title"] = "Upload summary";
+}
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>HentaiPages</title>
+    <link rel="stylesheet" href="css/site.css">
+</head>
+
+<body style="margin: 0; padding: 0;">
+<div class="photo-gallery">
+        <div class="container">
+            <div class="intro">
+                <h2 class="text-center">Skipped</h2>
+                @foreach (var (key, value) in Model.UploadService.GetCurrentUploadResult().ImageIdsPair)
+                {
+                    <div class="text-nowrap">
+                        @if (!Model.UploadService.IsTextUpload())
+                        {
+                            <img src="data:image/png;base64, @key" alt="image" style="width: 200px"/>
+                        }
+                        else
+                        {
+                                <a href="/api/images/GetImageDataById/@key" style="color: #FFFFFF" target="_blank">
+                                    <img src="/api/images/GetImageDataById/@key" alt="image" style="width: 200px"/>
+                                </a>
+                        }
+                        @foreach (var repeats in value)
+                        {
+                            <div style="float: right">
+
+                                <a href="/api/images/GetImageDataById/@repeats" style="color: #FFFFFF" target="_blank">
+                                    <img src="/api/images/GetImageDataById/@repeats" alt="image" style="width: 100px"/>
+                                    <figcaption>@repeats</figcaption>
+                                </a>
+                                <a href style="white-space: nowrap" onclick="deleteImage(@repeats);">delete</a>
+                            </div>
+                        }
+                    </div>
+                    <hr/>
+                }
+            </div>
+        </div>
+</div>
+    <script src="js/uploadSummary.js"></script>
+</body>
