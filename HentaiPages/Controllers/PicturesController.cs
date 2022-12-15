@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Net.Mime;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,7 +15,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SimpleImageComparisonClassLibrary;
-using Image = HentaiPages.Database.Tables.Image;
 
 namespace HentaiPages.Controllers
 {
@@ -33,20 +33,21 @@ namespace HentaiPages.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<Image> GetImageById(long id)
+        public async Task<HImage> GetImageById(long id)
         {
             var image = await _db.Images
                 .AsNoTracking()
                 .Where(c => c.ImageId == id)
-                .Select(x=>new Image()
+                .Select(x=>new HImage()
                 {
                     ContentType = x.ContentType,
                     Favourite = x.Favourite,
                     ImageId = x.ImageId,
-                    UploadDate = x.UploadDate
+                    UploadDate = x.UploadDate,
+                    ImagePath = x.ImagePath,
+                    Tags = x.Tags
                 })
                 .FirstOrDefaultAsync();
-            image.Data = null;
             return image;
         }
 
@@ -58,7 +59,7 @@ namespace HentaiPages.Controllers
                 .Where(c => c.ImageId == id)
                 .Include(x=>x.Tags)
                 .ThenInclude(x=>x.Tag)
-                .Select(x=>new Image()
+                .Select(x=>new HImage()
                 {
                     ContentType = x.ContentType,
                     Favourite = x.Favourite,
@@ -73,8 +74,14 @@ namespace HentaiPages.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult> GetImageDataById(long id)
         {
-            var image = await _db.Images.AsNoTracking().Where(c => c.ImageId == id).Select(x=>new {x.Data, x.ContentType}).FirstOrDefaultAsync();
-            return File(image?.Data, image?.ContentType);
+            var image = await _db.Images.AsNoTracking().Where(c => c.ImageId == id)
+                .Select(x=>new {x.ImagePath, x.ContentType}).FirstOrDefaultAsync();
+            if (image is null)
+                return NotFound();
+            Response.Headers.Add("Content-Disposition", "inline");
+            var fileResult = new FileContentResult(ImageManager.GetData(image.ImagePath), image.ContentType);
+            fileResult.EnableRangeProcessing = true;
+            return fileResult;
         }
 
         [HttpGet("{id}")]
@@ -96,13 +103,14 @@ namespace HentaiPages.Controllers
         public async Task<ActionResult<bool>> DeleteImage(long id)
         {
             var image = await _db.Images.AsNoTracking().FirstOrDefaultAsync(c => c.ImageId == id);
+            _db.RemoveRange(_db.SimilarityScores.Where(x => x.ChildImageId == id || x.ParentImageId == id).ToList());
+            if (image is not null)
+            {
+                ImageManager.DeleteData(image.ImagePath);
+                _db.Remove(image);
+            }
 
-            if (image == null)
-                return false;
-
-            _db.Remove(image);
             await _db.SaveChangesAsync();
-
             return true;
         }
 
@@ -144,37 +152,6 @@ namespace HentaiPages.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<bool>> Hash(long id)
-        {
-            var imageIds = await _db.Images
-                .AsNoTracking()
-                .Where(x=>!x.ContentType.Contains("gif") && !x.ContentType.Contains("mp4") && x.Hash != null)
-                .Select(x => x.ImageId).ToListAsync();
-
-            foreach (var idChunk in imageIds.ChunkBy(200))
-            {
-                foreach (var imageId in idChunk)
-                {
-                    try
-                    {
-                        var image = await _db.Images.FirstOrDefaultAsync(x => x.ImageId == imageId);
-                        
-                        image.Hash = image.Data.Hash();
-                    }
-                    catch (Exception)
-                    {
-                    
-                    }
-                
-                }
-            
-                await _db.SaveChangesAsync();
-            }
-
-            return true;
-        }
-
-        [HttpGet("{id}")]
         public async Task<ActionResult<List<long>>> FindSimilar(long id)
         {
             var duplicates = new List<long>();
@@ -185,7 +162,7 @@ namespace HentaiPages.Controllers
 
             var commonSize = new Size(500, 500);
             
-            using var ms = new MemoryStream(image.Data);
+            using var ms = new MemoryStream(ImageManager.GetData(image.ImagePath));
             var source = ImageTool.ResizeImage(System.Drawing.Image.FromStream(ms), commonSize);
 
             var ids = await _db.Images.Where(c => c.ImageId != id).Select(x=>x.ImageId).ToListAsync();
@@ -195,11 +172,11 @@ namespace HentaiPages.Controllers
 
             foreach (var i in ids)
             {
-                var imageData = await _db.Images.Where(c => c.ImageId == i).Select(x=>x.Data).FirstOrDefaultAsync();
+                var imageData = await _db.Images.Where(c => c.ImageId == i).Select(x=>x.ImagePath).FirstOrDefaultAsync();
 
                 try
                 {
-                    using var ms2 = new MemoryStream(imageData);
+                    using var ms2 = new MemoryStream(ImageManager.GetData(image.ImagePath));
                     var imgFromStream = System.Drawing.Image.FromStream(ms2);
                     var img = ImageTool.ResizeImage(imgFromStream, commonSize);
                     sw.WriteLine($"{++processed}/{ids.Count}");

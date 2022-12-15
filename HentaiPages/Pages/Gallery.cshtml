@@ -189,7 +189,7 @@
                     <div class="col-sm-6 col-md-4 col-lg-3 item">
                         @if (Model.ImageIds[i].IsVideo)
                         {
-                            <video class="img-fluid" muted controls="controls" onclick="openModal(@Html.Raw(Json.Serialize(Model.ImageIds.Select(x => x.Id))), @i);">
+                            <video class="img-fluid" muted controls="controls" loop onclick="openModal(@Html.Raw(Json.Serialize(Model.ImageIds.Select(x => x.Id))), @i);">
                                 <source src="/api/images/GetImageDataById/@Model.ImageIds[i].Id" type="video/mp4">
                             </video>
                         }

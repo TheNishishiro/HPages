@@ -10,5 +10,7 @@ async function deleteImage(id) {
 
     if (confirm('Are you sure you want to delete this image?')) {
         await ExecuteAPICall(constructedUri);
+        let img = document.getElementById(id);
+        img.style.visibility = 'hidden';
     }
 }

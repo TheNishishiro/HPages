@@ -5,17 +5,20 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Task = System.Threading.Tasks.Task;
 
 namespace HentaiPages.Database
 {
     public class HentaiDbContext : DbContext
     {
-        public DbSet<Image> Images { get; set; }
+        public DbSet<HImage> Images { get; set; }
         public DbSet<Tags> Tags { get; set; }
+        public DbSet<Similarity> SimilarityScores { get; set; }
+        public DbSet<WorkerTask> Tasks { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder builder)
         {
-            var connectionStringBuilder = new SqliteConnectionStringBuilder { DataSource = "HentaiDb.db" };
+            var connectionStringBuilder = new SqliteConnectionStringBuilder { DataSource = @"D:/HentaiDb.db" };
             var connectionString = connectionStringBuilder.ToString();
             var connection = new SqliteConnection(connectionString);
 
@@ -29,10 +32,12 @@ namespace HentaiPages.Database
             builder.Entity<TagsImages>().HasOne(c => c.Image).WithMany(c => c.Tags).HasForeignKey(c=>c.ImageId);
             builder.Entity<TagsImages>().HasOne(c => c.Tag).WithMany(c => c.Images).HasForeignKey(c => c.TagsId);
 
-            builder.Entity<Image>().HasIndex(c => new { c.ImageId });
-            builder.Entity<Image>().HasIndex(c => new { c.UploadDate });
-            builder.Entity<Image>().HasIndex(c => new { c.Hash });
-
+            builder.Entity<HImage>().HasKey(c => c.ImageId);
+            builder.Entity<HImage>().HasIndex(c => new { c.UploadDate });
+            builder.Entity<HImage>().HasIndex(c => new { c.PixelData });
+            
+            builder.Entity<Similarity>().HasIndex(c => new { c.ChildImageId });
+            
             base.OnModelCreating(builder);
         }
     }

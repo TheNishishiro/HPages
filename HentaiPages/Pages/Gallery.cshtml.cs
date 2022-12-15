@@ -30,7 +30,7 @@ namespace HentaiPages.Pages
 
         [BindProperty(SupportsGet = true)] public int CurrentPage { get; set; } = 1;
 
-        [BindProperty(SupportsGet = true)] public int PageSize { get; set; } = 100;
+        [BindProperty(SupportsGet = true)] public int PageSize { get; set; } = 200;
 
         public int ImagesCount { get; set; }
 
@@ -55,7 +55,7 @@ namespace HentaiPages.Pages
                 .AsQueryable();
             imageQuery = FilterQuery(imageQuery);
             imageQuery = imageQuery.OrderByDescending(x => x.ImageId)
-                .Select(x => new Image {ImageId = x.ImageId, ContentType = x.ContentType});
+                .Select(x => new HImage {ImageId = x.ImageId, ContentType = x.ContentType});
 
             ImagesCount = await imageQuery.CountAsync();
             ImageIds = await imageQuery
@@ -101,7 +101,7 @@ namespace HentaiPages.Pages
             return PaginatedList<int>.CalculateIndex(id, CurrentPage, PageSize);
         }
 
-        private IQueryable<Image> FilterQuery(IQueryable<Image> query)
+        private IQueryable<HImage> FilterQuery(IQueryable<HImage> query)
         {
             var filterProperties = GalleryFilter.GetType().GetProperties();
             foreach (var property in filterProperties)

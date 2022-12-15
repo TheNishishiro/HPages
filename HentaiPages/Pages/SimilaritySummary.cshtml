@@ -1,0 +1,55 @@
+﻿@page
+@model HentaiPages.Pages.SimilaritySummary
+
+@{
+    ViewData["Title"] = "Similarity summary";
+}
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>HentaiPages</title>
+    <link rel="stylesheet" href="css/site.css">
+</head>
+
+<body style="margin: 0; padding: 0;">
+<div class="photo-gallery">
+        <div class="container">
+            <div class="intro">
+                <h2 class="text-center">Duplications found</h2>
+                <form id="record-filter-form" method="post">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item">
+                            <button asp-page-handler="Resolve" class="page-link" type="submit" >Auto resolve</button>
+                        </li>
+                    </ul>  
+                </form>
+                @foreach (var (key, value) in Model.Duplications)
+                {
+                    <div style="display: inline-block">
+                        <div style="display: inline-block">
+                            <a href="/api/images/GetImageDataById/@key" style="color: #FFFFFF" target="_blank" >
+                                <img src="/api/images/GetImageDataById/@key" alt="image" style="width: 200px" id="@key"/>
+                                <figcaption>@key</figcaption>
+                            </a>
+                            <button class="btn btn-outline-danger" style="white-space: nowrap" onclick="deleteImage(@key);">delete</button>
+                        </div>
+                        @foreach (var repeats in value)
+                        {
+                            <div style="display: inline-block">
+
+                                <a href="/api/images/GetImageDataById/@repeats" style="color: #FFFFFF" target="_blank">
+                                    <img src="/api/images/GetImageDataById/@repeats" alt="image" style="width: 100px" id="@repeats"/>
+                                    <figcaption>@repeats</figcaption>
+                                </a>
+                                <button class="btn btn-outline-danger" style="white-space: nowrap" onclick="deleteImage(@repeats);">delete</button>
+                            </div>
+                        }
+                    </div>
+                    <hr/>
+                }
+            </div>
+        </div>
+</div>
+    <script src="js/uploadSummary.js"></script>
+</body>

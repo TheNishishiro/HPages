@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HentaiPages", "HentaiPages\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleImageComparisonClassLibrary", "SimpleImageComparisonClassLibrary\SimpleImageComparisonClassLibrary.csproj", "{6E17E0D8-ACF3-4E1F-A2B0-5B52D230E755}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DupsFinder", "DupsFinder\DupsFinder.csproj", "{E77774F6-B274-4BB7-B4BB-7D67349CFFAD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HentaiWorker", "HentaiWorker\HentaiWorker.csproj", "{E77774F6-B274-4BB7-B4BB-7D67349CFFAD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

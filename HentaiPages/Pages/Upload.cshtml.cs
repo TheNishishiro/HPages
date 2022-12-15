@@ -7,6 +7,7 @@ using System.Net;
 using System.Threading.Tasks;
 using HentaiPages.Database;
 using HentaiPages.Database.Tables;
+using HentaiPages.Models.Enums;
 using HentaiPages.Services;
 using HentaiPages.Utilities;
 using Microsoft.AspNetCore.Http;
@@ -15,6 +16,9 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
+using SimpleImageComparisonClassLibrary;
+using SimpleImageComparisonClassLibrary.ExtensionMethods;
+using SimpleImageComparisonClassLibrary.Models;
 
 namespace HentaiPages.Pages
 {
@@ -27,8 +31,17 @@ namespace HentaiPages.Pages
         public string ImageUrl { get; set; }
         [BindProperty(SupportsGet = true)]
         public bool ForceUpload { get; set; }
+        public int TasksToRun { get; set; }
 
         private readonly IUploadService _uploadService;
+
+        public string[] IgnoredTypes = new[]
+        {
+            "image/webp",
+            "video/mp4",
+            "video/webm",
+            "image/gif",
+        };
 
         public UploadModel(HentaiDbContext db, IUploadService uploadService)
         {
@@ -38,57 +51,45 @@ namespace HentaiPages.Pages
 
         public async void OnGetAsync()
         {
+            TasksToRun = await _db.Tasks.CountAsync(x => x.FinishDate == null);
             return;
         }
 
         public async Task<IActionResult> OnPostUploadFileAsync()
         {
-            _uploadService.Reset();
-            var currentHashes = new List<string>();
+            var images = new List<HImage>();
             foreach (var file in Images)
             {
-                if (file.ContentType == "text/plain")
-                {
-                    var text = await ReadFormFileAsync(file);
-                    var lines = text.Split('\n');
-                    foreach (var line in lines)
-                    {
-                        var entry = line.Split(':');
-                        if (entry.Length <= 1 || string.IsNullOrWhiteSpace(entry[1])) continue;
-                
-                        var indexes = entry[1].Split(',');
-                        foreach (var index in indexes.Select(x => long.Parse(x.Trim())))
-                        {
-                            if (!_db.Images.AsNoTracking().Any(x=>x.ImageId == index)) continue;
-                            var deleteImage = new Database.Tables.Image() {ImageId = index};
-                            _db.Images.Remove(deleteImage);
-                        }
-                    }
-                    await _db.SaveChangesAsync();
-                    return RedirectToPage("/Index");
-                }
-                
                 var data = await GetByteArrayFromImage(file);
-                var imageHash = data.Hash();
-                if (!string.IsNullOrWhiteSpace(imageHash))
-                {
-                    var similarIds = _db.Images.Where(x => x.Hash == imageHash).Select(x => x.ImageId).ToList();
-                    if (currentHashes.Any(x => x == imageHash)) continue;
 
-                    if (similarIds.Any() && !ForceUpload)
+                try
+                {
+                    string hash = null;
+                    if (!IgnoredTypes.Contains(file.ContentType))
                     {
-                        _uploadService.AddData(data, similarIds);
-                        continue;
+                        await using var ms = new MemoryStream(data);
+                        using var imgFromStream = Image.FromStream(ms);
+                        var img = ImageTool.ResizeImage(imgFromStream.GetGrayScaleVersion(), new Size(100, 100));
+
+                        var lockBitmap = new LockBitmap((Bitmap) img);
+                        hash = lockBitmap.GetPixels();
+                        if (_db.Images.Any(x => x.PixelData == hash) && !ForceUpload)
+                            continue;
                     }
 
-                    currentHashes.Add(imageHash);
+                    images.Add(new HImage
+                    {
+                        ImagePath = ImageManager.ExtractToPhysicalPath(_db, data), 
+                        Tags = new List<TagsImages>(), 
+                        UploadDate = DateTime.Now,
+                        ContentType = file.ContentType,
+                        PixelData = hash
+                    });
                 }
-
-                _db.Images.Add(new Database.Tables.Image
+                catch (Exception e)
                 {
-                    Data = data, Tags = new List<TagsImages>(), UploadDate = DateTime.Now,
-                    ContentType = file.ContentType, Hash = imageHash
-                });
+                    throw new Exception($"{e.Message}\n{e.StackTrace}\n{e.InnerException?.Message}\n{file.FileName}\n{file.ContentType}");
+                }
             }
 
             using (var client = new WebClient())
@@ -98,27 +99,32 @@ namespace HentaiPages.Pages
                     foreach (var url in ImageUrl.Split('\n'))
                     {
                         var data = client.DownloadData(new Uri(url));
-                        var imageHash = data.Hash();
-                        var similarIds = _db.Images.Where(x => x.Hash == imageHash).Select(x => x.ImageId).ToList();
-                        if (similarIds.Any() && !ForceUpload && !string.IsNullOrWhiteSpace(imageHash))
+                        images.Add(new HImage
                         {
-                            _uploadService.AddData(data, similarIds);
-                            continue;
-                        }
-                        _db.Images.Add(new Database.Tables.Image
-                        {
-                            Data = data, Tags = new List<TagsImages>(), UploadDate = DateTime.Now,
+                            ImagePath = ImageManager.ExtractToPhysicalPath(_db, data),
+                            Tags = new List<TagsImages>(), 
+                            UploadDate = DateTime.Now,
                             ContentType = "application/octet-stream"
                         });
                     }
                 }
             }
 
+            _db.Images.AddRange(images);
+            await _db.SaveChangesAsync();
+
+            foreach (var insertedImage in images)
+            {
+                _db.Tasks.Add(new WorkerTask()
+                {
+                    Type = TaskType.FindSimilar,
+                    ObjectId = insertedImage.ImageId,
+                    PostDate = DateTime.Now
+                });
+            }
             await _db.SaveChangesAsync();
             
-            if (!_uploadService.HasRepeats())
-                return Page();
-            return RedirectToPage("/UploadSummary");
+            return Page();
         }
 
         private async Task<byte[]> GetByteArrayFromImage(IFormFile file)

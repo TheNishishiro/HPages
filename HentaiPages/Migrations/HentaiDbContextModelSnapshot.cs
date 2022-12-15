@@ -14,27 +14,24 @@ namespace HentaiPages.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.1.9");
+                .HasAnnotation("ProductVersion", "5.0.13");
 
-            modelBuilder.Entity("HentaiPages.Database.Tables.Image", b =>
+            modelBuilder.Entity("HentaiPages.Database.Tables.HImage", b =>
                 {
-                    b.Property<long>("ImageId")
+                    b.Property<int>("ImageId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("ContentType")
                         .HasColumnType("TEXT");
 
-                    b.Property<byte[]>("Data")
-                        .HasColumnType("BLOB");
-
                     b.Property<bool>("Favourite")
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("HasHash")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("ImagePath")
+                        .HasColumnType("TEXT");
 
-                    b.Property<string>("Hash")
+                    b.Property<string>("PixelData")
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("UploadDate")
@@ -42,11 +39,33 @@ namespace HentaiPages.Migrations
 
                     b.HasKey("ImageId");
 
-                    b.HasIndex("Hash");
+                    b.HasIndex("PixelData");
 
-                    b.HasIndex("ImageId", "UploadDate");
+                    b.HasIndex("UploadDate");
 
                     b.ToTable("Images");
+                });
+
+            modelBuilder.Entity("HentaiPages.Database.Tables.Similarity", b =>
+                {
+                    b.Property<int>("SimilarityId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("ChildImageId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("ParentImageId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<float>("SimilarityScore")
+                        .HasColumnType("REAL");
+
+                    b.HasKey("SimilarityId");
+
+                    b.HasIndex("ChildImageId");
+
+                    b.ToTable("SimilarityScores");
                 });
 
             modelBuilder.Entity("HentaiPages.Database.Tables.Tags", b =>
@@ -65,7 +84,7 @@ namespace HentaiPages.Migrations
 
             modelBuilder.Entity("HentaiPages.Database.Tables.TagsImages", b =>
                 {
-                    b.Property<long>("ImageId")
+                    b.Property<int>("ImageId")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("TagsId")
@@ -78,9 +97,53 @@ namespace HentaiPages.Migrations
                     b.ToTable("TagsImages");
                 });
 
+            modelBuilder.Entity("HentaiPages.Database.Tables.WorkerTask", b =>
+                {
+                    b.Property<int>("WorkerTaskId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("ErrorMessage")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("FinishDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int?>("ObjectId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("ObjectId2")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("PostDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("RestartOnFailure")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("ResultId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("ResultMessage")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int?>("ResultObjectId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("StartDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("WorkerTaskId");
+
+                    b.ToTable("Tasks");
+                });
+
             modelBuilder.Entity("HentaiPages.Database.Tables.TagsImages", b =>
                 {
-                    b.HasOne("HentaiPages.Database.Tables.Image", "Image")
+                    b.HasOne("HentaiPages.Database.Tables.HImage", "Image")
                         .WithMany("Tags")
                         .HasForeignKey("ImageId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -91,6 +154,20 @@ namespace HentaiPages.Migrations
                         .HasForeignKey("TagsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Image");
+
+                    b.Navigation("Tag");
+                });
+
+            modelBuilder.Entity("HentaiPages.Database.Tables.HImage", b =>
+                {
+                    b.Navigation("Tags");
+                });
+
+            modelBuilder.Entity("HentaiPages.Database.Tables.Tags", b =>
+                {
+                    b.Navigation("Images");
                 });
 #pragma warning restore 612, 618
         }
