@@ -1,0 +1,249 @@
+﻿@page
+@using System.Reflection
+@using System.ComponentModel.DataAnnotations
+@using HPages.CustomAttributes
+@using HPages.Models.Enums
+@model HPages.Pages.GalleryModel
+@{
+    ViewData["Title"] = "Gallery";
+}
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>HPages</title>
+    <link rel="stylesheet" href="css/modal.css">
+    <link rel="stylesheet" href="css/site.css">
+</head>
+
+<body style="margin: 0; padding: 0;">
+    <div class="photo-gallery">
+        <div class="container">
+            <div class="intro">
+                <h2 class="text-center">Gallery</h2>
+                <form id="record-filter-form" method="post">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item">
+                            <button asp-page-handler="ApplyFilters" class="page-link" type="submit" asp-route-CurrentPage="@Model.CurrentPage">Apply</button>
+                        </li>
+                        <li class="page-item">
+                            <button class="page-link" onclick="toggleFilterTags();" on="" type="button">Toggle tags</button>
+                        </li>
+                        <li class="page-item">
+                            <button asp-page-handler="UntaggedFilter" class="page-link" type="submit" asp-route-CurrentPage="@Model.CurrentPage">Untagged</button>
+                        </li>
+                        <li class="page-item">
+                            <button asp-page-handler="ResetFilters" class="page-link" type="submit" asp-route-CurrentPage="@Model.CurrentPage">Reset</button>
+                        </li>
+                    </ul>
+                    <div id="filterTagsPicker"  style="display: none">
+                        <div class="illustration">
+                            <h1 id="filter-heading" class="text-center" style="color: #ffffff">Tag filter</h1>
+                        </div>
+                        <div class="form-row" style="color: #ffffff">
+                            <div class="col">
+                                @foreach (var filter in Model.GalleryFilter.Enumerate(FilterFieldType.Type))
+                                {
+                                    <label for="GalleryFilter_@filter.FieldName">@filter.DisplayText</label>
+                                    <select onchange="SetSelectBackgroundColor(this)" class="list-box tri-state" id="GalleryFilter_@filter.FieldName" name="GalleryFilter.@filter.FieldName" style="background-color: @(((bool?)filter.Property.GetValue(Model.GalleryFilter))==true ? "#ADFFA5" : (bool?)filter.Property.GetValue(Model.GalleryFilter) == false ? "#FF7F7F" : "#FFFFFF")">
+                                        @if ((bool?) filter.Property.GetValue(Model.GalleryFilter) == null)
+                                        {
+                                            <option selected="selected" value="">Not Set</option>
+                                            <option value="true">True</option>
+                                            <option value="false">False</option>
+                                        }
+                                        else if ((bool?) filter.Property.GetValue(Model.GalleryFilter) == true)
+                                        {
+                                            <option value="">Not Set</option>
+                                            <option selected="selected" value="true">True</option>
+                                            <option value="false">False</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="">Not Set</option>
+                                            <option value="true">True</option>
+                                            <option selected="selected" value="false">False</option>
+                                        }
+                                    </select>
+                                }
+                            </div>  
+                            <div class="col">
+                                @foreach (var filter in Model.GalleryFilter.Enumerate(FilterFieldType.Characteristic))
+                                {
+                                    <label for="GalleryFilter_@filter.FieldName">@filter.DisplayText</label>
+                                    <select class="list-box tri-state" 
+                                            id="GalleryFilter_@filter.FieldName" 
+                                            name="GalleryFilter.@filter.FieldName" 
+                                            onchange="SetSelectBackgroundColor(this)"
+                                            style="background-color: 
+                                                @(((bool?)filter.Property.GetValue(Model.GalleryFilter))==true ? "#ADFFA5" : (bool?)filter.Property.GetValue(Model.GalleryFilter) == false ? "#FF7F7F" : "#FFFFFF")">
+                                        @if ((bool?) filter.Property.GetValue(Model.GalleryFilter) == null)
+                                        {
+                                            <option selected="selected" value="">Not Set</option>
+                                            <option value="true">True</option>
+                                            <option value="false">False</option>
+                                        }
+                                        else if ((bool?) filter.Property.GetValue(Model.GalleryFilter) == true)
+                                        {
+                                            <option value="">Not Set</option>
+                                            <option selected="selected" value="true">True</option>
+                                            <option value="false">False</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="">Not Set</option>
+                                            <option value="true">True</option>
+                                            <option selected="selected" value="false">False</option>
+                                        }
+                                    </select>
+                                }
+                            </div>   
+                            <div class="col">
+                                @foreach (var filter in Model.GalleryFilter.Enumerate(FilterFieldType.Actions))
+                                {
+                                    <label for="GalleryFilter_@filter.FieldName">@filter.DisplayText</label>
+                                    <select onchange="SetSelectBackgroundColor(this)" class="list-box tri-state" id="GalleryFilter_@filter.FieldName" name="GalleryFilter.@filter.FieldName"style="background-color: @(((bool?)filter.Property.GetValue(Model.GalleryFilter))==true ? "#ADFFA5" : (bool?)filter.Property.GetValue(Model.GalleryFilter) == false ? "#FF7F7F" : "#FFFFFF")">
+                                        @if ((bool?) filter.Property.GetValue(Model.GalleryFilter) == null)
+                                        {
+                                            <option selected="selected" value="">Not Set</option>
+                                            <option value="true">True</option>
+                                            <option value="false">False</option>
+                                        }
+                                        else if ((bool?) filter.Property.GetValue(Model.GalleryFilter) == true)
+                                        {
+                                            <option value="">Not Set</option>
+                                            <option selected="selected" value="true">True</option>
+                                            <option value="false">False</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="">Not Set</option>
+                                            <option value="true">True</option>
+                                            <option selected="selected" value="false">False</option>
+                                        }
+                                    </select>
+                                }
+                            </div>  
+                            <div class="col">
+                                @foreach (var filter in Model.GalleryFilter.Enumerate(FilterFieldType.Profession))
+                                {
+                                    <label for="GalleryFilter_@filter.FieldName">@filter.DisplayText</label>
+                                    <select onchange="SetSelectBackgroundColor(this)" class="list-box tri-state" id="GalleryFilter_@filter.FieldName" name="GalleryFilter.@filter.FieldName"style="background-color: @(((bool?)filter.Property.GetValue(Model.GalleryFilter))==true ? "#ADFFA5" : (bool?)filter.Property.GetValue(Model.GalleryFilter) == false ? "#FF7F7F" : "#FFFFFF")">
+                                        @if ((bool?) filter.Property.GetValue(Model.GalleryFilter) == null)
+                                        {
+                                            <option selected="selected" value="">Not Set</option>
+                                            <option value="true">True</option>
+                                            <option value="false">False</option>
+                                        }
+                                        else if ((bool?) filter.Property.GetValue(Model.GalleryFilter) == true)
+                                        {
+                                            <option value="">Not Set</option>
+                                            <option selected="selected" value="true">True</option>
+                                            <option value="false">False</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="">Not Set</option>
+                                            <option value="true">True</option>
+                                            <option selected="selected" value="false">False</option>
+                                        }
+                                    </select>
+                                }
+                            </div>  
+                            <div class="col">
+                            </div>   
+                        </div>
+                    </div>
+                </form>
+                <hr>
+                <p class="text-center">@Model.CurrentPage / @(Math.Ceiling((double)Model.ImagesCount/(double)Model.PageSize))</p>
+                <ul class="pagination justify-content-center">
+                    <li class="page-item">
+                        <a asp-page="/Gallery"
+                           asp-route-CurrentPage="1"
+                           class="page-link">First</a>
+                    </li>
+                    <li class="page-item @(Model.CurrentPage <= 1 ? "disabled":"")">
+                        <a asp-page="/Gallery"
+                           asp-route-CurrentPage="@(Model.CurrentPage - 1)"
+                           class="page-link">Previous</a>
+                    </li>
+                    <li class="page-item  @(Model.CurrentPage >= Math.Ceiling((double)Model.ImagesCount/(double)Model.PageSize) ? "disabled":"")">
+                        <a asp-page="/Gallery"
+                           asp-route-CurrentPage="@(Model.CurrentPage + 1)"
+                           class="page-link">Next</a>
+                    </li>
+                    <li class="page-item">
+                        <a asp-page="/Gallery"
+                           asp-route-CurrentPage="@(Math.Ceiling((double)Model.ImagesCount/(double)Model.PageSize))"
+                           class="page-link">Last</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="row photos">
+                @for(var i = 0; i < Model.ImageIds.Length; i++)
+                {
+                    <div class="col-sm-6 col-md-4 col-lg-3 item">
+                        @if (Model.ImageIds[i].IsVideo)
+                        {
+                            <video class="img-fluid" muted controls="controls" loop onclick="openModal(@Html.Raw(Json.Serialize(Model.ImageIds.Select(x => x.Id))), @i);">
+                                <source src="/api/images/GetImageDataById/@Model.ImageIds[i].Id" type="video/mp4">
+                            </video>
+                        }
+                        else
+                        {
+                            <img class="img-fluid" src="/api/images/GetImageDataById/@Model.ImageIds[i].Id" onclick="openModal(@Html.Raw(Json.Serialize(Model.ImageIds.Select(x => x.Id))), @i);">
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <p style="float: left" id="headerId">Image Id</p>
+                <span class="close">&times;</span><br>
+            </div>
+            <div class="modal-body"  style="overflow-y: scroll;">
+                <div id="displayImage">
+                    <div id="modalVideoDiv">
+                        <video class="img-fluid" controls loop id="video">
+                            <source src="" type="video/mp4" id="modalVideoPlayer">
+                        </video>
+                    </div>
+                </div>
+                <div id="descriptionDiv">
+                    <p id="uploadDate">this is test content</p>
+                    <div id="tagPicker">
+                        @foreach (var tag in Model.AvailableTags)
+                        {
+                            <label>
+                                <input type="checkbox" id="@string.Concat("checkbox", tag)" value="@tag"> @tag
+                            </label>
+                        }
+                        </div>
+                    <div>
+                        <button id="toggleTagsButton" onclick="toggleTags();" on="" >Toggle tags</button>
+                        <button id="saveTagsButton" onclick="saveTagsSettings();" on="" >Save tags</button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="likeButton" onclick="setFavourite();" on="" ></button>
+                <button id="downloadButton" onclick="download();" on="" >Download</button>
+                <button id="deleteButton" onclick="deleteImage();" on="" >Delete</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+    <script src="js/modal.js"></script>
+</body>
+
+</html>
