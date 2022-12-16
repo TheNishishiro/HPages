@@ -21,6 +21,10 @@ Ready to get started with HPages? Follow these simple steps:
 
 We always love to hear from our users! If you have an idea for a new feature or have found a bug, don't hesitate to open an issue on the repository. Your feedback helps us make HPages the best it can be.
 
+## Credits
+
+Image comparision algorith implementation by [xnafan](https://github.com/xnafan/Simple-image-comparison)
+
 ## License
 
 HPages is licensed under the *do whatever you want with it*
