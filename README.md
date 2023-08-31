@@ -13,7 +13,7 @@ Welcome to HPages, the ultimate app for storing and browsing your favorite image
 
 Ready to get started with HPages? Follow these simple steps:
 
-1. Clone the repository: `git clone https://github.com/TheNishishiro/Hentai-Pages.git`
+1. Clone the repository: `git clone https://github.com/TheNishishiro/HPages.git`
 2. Install the dependencies: `dotnet restore`
 3. Run the app: `dotnet run`
 
