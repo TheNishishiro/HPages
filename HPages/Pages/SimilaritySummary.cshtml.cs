@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -46,6 +47,8 @@ namespace HPages.Pages
                 .Distinct()
                 .ToList();
 
+            var pathToDelete = new List<string>();
+
             foreach (var duplicateList in duplications.Select(duplication => _db.Images
                          .AsNoTracking()
                          .Where(x => 
@@ -54,10 +57,23 @@ namespace HPages.Pages
                             .Select(x =>
                             {
                                 var imageData = ImageManager.GetData(x.ImagePath);
-                                using var ms = new MemoryStream(imageData);
-                                var imgFromStream = Image.FromStream(ms);
-    
-                                return new {imgFromStream.Width, imgFromStream.Height, x.ImageId, x.ImagePath};
+                                Image imgFromStream = null;
+                                try
+                                {
+                                    if (imageData is not null)
+                                    {
+                                        using var ms = new MemoryStream(imageData);
+                                        imgFromStream = Image.FromStream(ms);
+                                    }
+                                }
+                                catch (Exception e)
+                                {
+                                    Console.WriteLine(e);
+                                }
+
+                                var Width = imageData is null ? -1 : (imgFromStream?.Width).GetValueOrDefault();
+                                var Height = imageData is null ? -1 : (imgFromStream?.Height).GetValueOrDefault();
+                                return new {Width, Height, x.ImageId, x.ImagePath};
                             })
                             .OrderByDescending(x=>x.Height+x.Width)
                             .Select(x=>new{x.Width, x.Height, x.ImageId, x.ImagePath})
@@ -65,14 +81,18 @@ namespace HPages.Pages
             {
                 foreach (var duplicateIdToDelete in duplicateList.Skip(1))
                 {
-                    ImageManager.DeleteData(duplicateIdToDelete.ImagePath);
-                    _db.Remove(new HImage(){ImageId =duplicateIdToDelete.ImageId});
+                    pathToDelete.Add(duplicateIdToDelete.ImagePath);
+                    _db.Remove(new HImage(){ImageId = duplicateIdToDelete.ImageId});
                     _db.RemoveRange(_db.SimilarityScores.Where(x =>
                         x.ChildImageId == duplicateIdToDelete.ImageId || x.ParentImageId == duplicateIdToDelete.ImageId));
                 }
             }
 
             await _db.SaveChangesAsync();
+            foreach (var path in pathToDelete)
+            {
+                ImageManager.DeleteData(path);
+            }
             return Page();
         }
     }
